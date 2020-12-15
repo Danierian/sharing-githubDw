@@ -45,7 +45,7 @@ fig.update_layout(
     height=1500,
     xaxis_title='Poverty Rate',
     yaxis_title='State',
-    paper_bgcolor="steelblue",
+    paper_bgcolor="White",
     title='Average Poverty Rate by Tract Designation and State, 2012-2016',
     xaxis=dict(
         title='Percentages',
@@ -385,7 +385,9 @@ It may take some time given it is raw data that stills needs to be clean and is 
 tract level. However, we do have exact lat/long coordinates and it is rumored that HUD users has a crosswalk between 
 zip codes and census tracts. 
 
-''')
+'''),
+    html.Br(),
+    html.Br()
 ])
 
 if __name__ == '__main__':
