@@ -6,18 +6,24 @@ import plotly.graph_objects as go
 import pandas as pd
 import geopandas as gpd
 
-
-
-
-
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server=app.server
-PovertyRates=pd.read_csv('PovertyRates.csv',encoding='Latin-1')
-unemp=pd.read_csv('unemploymentRates.csv',encoding='Latin-1')
-demographics =[ 'People Living in Poverty','Hispanics','African Americans', 'Adults without Diploma']
+server = app.server
+# ------------------------------------------------------------------------------------------
+#
+# Importing Data
+#
+# ------------------------------------------------------------------------------------------
+PovertyRates = pd.read_csv('PovertyRates.csv', encoding='Latin-1')
+unemp = pd.read_csv('unemploymentRates.csv', encoding='Latin-1')
+demographics = ['People Living in Poverty', 'Hispanics', 'African Americans', 'Adults without Diploma']
 
+# ------------------------------------------------------------------------------------------
+#
+#Figure 1 : Lollipop chart
+#
+# ------------------------------------------------------------------------------------------
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=PovertyRates['All Tracts'], y=PovertyRates.index, mode='markers', name='All Tracts'))
 fig.add_trace(go.Scatter(x=PovertyRates['Designated OZ'], y=PovertyRates.index, mode='markers', name='Designated OZ'))
@@ -40,7 +46,7 @@ fig.update_layout(
     height=1500,
     xaxis_title='Poverty Rate',
     yaxis_title='State',
-    paper_bgcolor="bisque",
+    paper_bgcolor="steelblue",
     title='Poverty Rates',
     xaxis=dict(
         title='Percentages',
@@ -51,20 +57,24 @@ fig.update_layout(
     )
 
 )
-
+# ------------------------------------------------------------------------------------------
+#
+# Figure 2 : Demographics
+#
+# ------------------------------------------------------------------------------------------
 fig2 = go.Figure()
 fig2.add_trace(go.Bar(x=demographics,
-                     y=[.30030, .2233, 0.2728, 0.2231],
-                     name='OZ Population',
-                     marker_color='red'  # ,text=[30.030,22.33,027.28,022.31]
+                      y=[.30030, .2233, 0.2728, 0.2231],
+                      name='OZ Population',
+                      marker_color='red'  # ,text=[30.030,22.33,027.28,022.31]
 
-                     ))
+                      ))
 fig2.add_trace(go.Bar(x=demographics,
-                     y=[0.1624, 0.1526, 0.1216, 0.1264],
-                     name='Non-OZ Population',
-                     marker_color='rgb(2, 88, 255)'
+                      y=[0.1624, 0.1526, 0.1216, 0.1264],
+                      name='Non-OZ Population',
+                      marker_color='rgb(2, 88, 255)'
 
-                     ))
+                      ))
 # fig.update_traces(texttemplate='%{text:.2s}', textposition='outside')
 fig2.update_layout(
     title='Demographics of Opportunity Zones',
@@ -90,6 +100,11 @@ fig2.update_layout(
     bargap=0.15,  # gap between bars of adjacent location coordinates.
     bargroupgap=0.1  # gap between bars of the same location coordinate.
 )
+# ------------------------------------------------------------------------------------------
+#
+# Figure 3 : Unemployment Graphs
+#
+# ------------------------------------------------------------------------------------------
 trace1 = {
     "name": "US",
     "type": "bar",
@@ -129,7 +144,6 @@ trace3 = {
         "color": "purple"
     }
 }
-
 
 data1 = [trace2, trace3, trace1]
 
@@ -182,7 +196,11 @@ fig3.update_layout(
     yaxis_title='Umemployment Rate',
     paper_bgcolor="White",
 )
-
+# ------------------------------------------------------------------------------------------
+#
+# Figure 4 : Labor Force Participation
+#
+# ------------------------------------------------------------------------------------------
 trace4 = {
     "name": "US",
     "type": "bar",
@@ -273,19 +291,29 @@ fig4.update_layout(
     yaxis_title='Umemployment Rate',
     paper_bgcolor="White",
 )
-
+# ------------------------------------------------------------------------------------------
+#
+# Creating app
+#
+# ------------------------------------------------------------------------------------------
 app.layout = html.Div([
-    html.H1("Opportunity Zone Research", style={'text-align': 'center'}),
-
-
+    html.H1("Characteristics of Opportunity Zones", style={'text-align': 'center'}),
 
     html.Div(id='output_container', children=[]),
     html.Br(),
-dcc.Markdown('''
-### Opportunity Zones
+    dcc.Markdown('''
+#### Opportunity Zone Selection Process
+To be eligible for designation, a census tract must 
+* Have a poverty rate of at least 20 percent; or
+* Have a median income below 80 percent of the State or metropolitan area
+* Be contiguous with a census tract meeting one of the above conditions and have median income less
+than 125% of the qualifying contiguous census tract. 
+
+The data used in this preliminary analysis comes from the 2016 American Community Survey (ACS), five year estimates
+
 
 '''),
-dcc.Graph(
+    dcc.Graph(
         id='Poverty_Rates',
         figure=fig
     ),
