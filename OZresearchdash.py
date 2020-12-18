@@ -10,27 +10,27 @@ import dash_table
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server=app.server
+
 # ------------------------------------------------------------------------------------------
 #
 # Importing Data
 #
 # ------------------------------------------------------------------------------------------
 PovertyRates = pd.read_csv('PovertyRates.csv', encoding='Latin-1')
-PovertyRates=PovertyRates.set_index('State_name')
+PovertyRates = PovertyRates.set_index('State_name')
 unemp = pd.read_csv('unemploymentRates.csv', encoding='Latin-1')
-unemp=unemp.set_index('State_name')
-medinc=pd.read_csv('medhhinc.csv',encoding='Latin-1')
-medinc=medinc.set_index('State_name')
-SD=pd.read_csv('povrate_SD.csv',encoding='Latin-1')
-SD=SD.set_index('State_name')
-contiguous_count=pd.read_csv('contiguous_count.csv',encoding='Latin_1')
+unemp = unemp.set_index('State_name')
+medinc = pd.read_csv('medhhinc.csv', encoding='Latin-1')
+medinc = medinc.set_index('State_name')
+SD = pd.read_csv('povrate_SD.csv', encoding='Latin-1')
+SD = SD.set_index('State_name')
+contiguous_count = pd.read_csv('contiguous_count.csv', encoding='Latin_1')
 
 demographics = ['People Living in Poverty', 'Hispanics', 'African Americans', 'Adults without Diploma']
 
 # ------------------------------------------------------------------------------------------
 #
-#Figure 1 : Lollipop chart
+# Figure 1 : Lollipop chart
 #
 # ------------------------------------------------------------------------------------------
 fig = go.Figure()
@@ -341,11 +341,11 @@ fig5.update_layout(
 
 fig6 = go.Figure()
 fig6.add_trace(go.Bar(y=SD.povrate_SD,
-                     x=SD.index,
-                     name='OZ Population',
-                     marker_color='green'  # ,text=[30.030,22.33,027.28,022.31]
+                      x=SD.index,
+                      name='OZ Population',
+                      marker_color='green'  # ,text=[30.030,22.33,027.28,022.31]
 
-                     ))
+                      ))
 fig6.update_layout(
     title='SD of Poverty Rates (OZ Designated Tracts)',
     autosize=False,
@@ -365,7 +365,6 @@ fig6.update_layout(
     bargap=0.15,  # gap between bars of adjacent location coordinates.
     bargroupgap=0.1  # gap between bars of the same location coordinate.
 )
-
 
 # ------------------------------------------------------------------------------------------
 #
@@ -407,7 +406,7 @@ that are the more impoverished communities in the United States.
         id='Demographics',
         figure=fig2
     ),
-html.Br(),
+    html.Br(),
     dcc.Markdown('''
 #### Poverty Rates
 
@@ -429,12 +428,21 @@ eligible OZs (not designated), and non-eligible census tracts.
         id='Poverty_Rates',
         figure=fig
     ),
-html.Br(),
-dcc.Graph(
+    html.Br(),
+    dcc.Graph(
         id='povrate_SD',
         figure=fig6
     ),
-html.Br(),
+    html.Br(),
+    dash_table.DataTable(
+        id='table',
+        columns=[{"name": i, "id": i}
+                 for i in contiguous_count.columns],
+        data=contiguous_count.to_dict('records'),
+        style_cell=dict(textAlign='left'),
+        style_header=dict(backgroundColor="paleturquoise"),
+        style_data=dict(backgroundColor="lavender")
+    ),
 
     dcc.Graph(
         id='medhhinc',
@@ -455,7 +463,7 @@ and labor force participation rate of designated OZs, eligible but not Designate
         id='laborforce',
         figure=fig4
     ),
-html.Br(),
+    html.Br(),
     dcc.Markdown('''
 #### Next Steps..
 
