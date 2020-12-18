@@ -434,16 +434,7 @@ eligible OZs (not designated), and non-eligible census tracts.
         figure=fig6
     ),
     html.Br(),
-    dash_table.DataTable(
-        id='table',
-        columns=[{"name": i, "id": i}
-                 for i in contiguous_count.columns],
-        data=contiguous_count.to_dict('records'),
-        style_cell=dict(textAlign='left'),
-        style_header=dict(backgroundColor="paleturquoise"),
-        style_data=dict(backgroundColor="lavender")
-    ),
-
+    
     dcc.Graph(
         id='medhhinc',
         figure=fig5
