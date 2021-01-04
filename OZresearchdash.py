@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import pandas as pd
 import geopandas as gpd
 import dash_table
+import dash_table.FormatTemplate as FormatTemplate
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -24,7 +25,8 @@ medinc = pd.read_csv('medhhinc.csv', encoding='Latin-1')
 medinc = medinc.set_index('State_name')
 SD = pd.read_csv('povrate_SD.csv', encoding='Latin-1')
 SD = SD.set_index('State_name')
-contiguous_count = pd.read_csv('contiguous_count.csv', encoding='Latin_1')
+cou = pd.read_csv('contiguous_count.csv',encoding='Latin-1')
+cou = cou.drop(['Unnamed: 0'], axis=1)
 
 demographics = ['People Living in Poverty', 'Hispanics', 'African Americans', 'Adults without Diploma']
 
@@ -52,7 +54,7 @@ fig.update_layout(
     height=1500,
     xaxis_title='Poverty Rate',
     yaxis_title='State',
-    paper_bgcolor="steelblue",
+    paper_bgcolor="white",
     title='Average Poverty Rate by Tract Designation and State, 2012-2016',
     xaxis=dict(
         title='Percentages',
@@ -311,7 +313,7 @@ fig5.add_trace(go.Scatter(x=medinc['OZeligible_medinc'], y=medinc.index, mode='m
 i = 0
 for row in medinc.values:
     fig5.add_shape(type="line",
-                  x0=row[0], x1=row[1], y0=i, y1=i,
+                  x0=row[1], x1=row[0], y0=i, y1=i,
                   line=dict(color="Blue", width=1))
     i = i + 1
     continue
@@ -365,6 +367,13 @@ fig6.update_layout(
     bargap=0.15,  # gap between bars of adjacent location coordinates.
     bargroupgap=0.1  # gap between bars of the same location coordinate.
 )
+
+# ------------------------------------------------------------------------------------------
+#
+# Figure 7: Which states used 25% of tracts
+#
+# ------------------------------------------------------------------------------------------
+
 
 # ------------------------------------------------------------------------------------------
 #
@@ -439,6 +448,36 @@ eligible OZs (not designated), and non-eligible census tracts.
         id='medhhinc',
         figure=fig5
     ),
+    dash_table.DataTable(
+        id='table',
+        columns=[{
+            'id': 'State_name',
+            'name': 'State',
+            'type': 'text'
+        }, {
+            'id': '# of OZ',
+            'name': '# of OZ',
+            'type': 'numeric'
+
+        }, {
+            'id': 'Contiguous_Count',
+            'name': 'Contiguous Tracts',
+            'type': 'numeric'
+
+        },
+            {
+                'id': 'Percentage',
+                'name': 'Percentage Contiguous',
+                'type': 'numeric'
+                #'format': FormatTemplate.percentage(1)
+            }
+        ],
+        data=cou.to_dict('records'),
+        style_cell=dict(textAlign='center'),
+        style_header=dict(backgroundColor="royalblue",textColor='White'),
+        style_data=dict(backgroundColor="lavender")
+    ),
+    html.Br(),
     dcc.Markdown('''
 #### Labor Metrics by State
 
