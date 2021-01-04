@@ -310,7 +310,7 @@ fig5.add_trace(go.Scatter(x=medinc['OZeligible_medinc'], y=medinc.index, mode='m
 
 i = 0
 for row in medinc.values:
-    fig.add_shape(type="line",
+    fig5.add_shape(type="line",
                   x0=row[0], x1=row[1], y0=i, y1=i,
                   line=dict(color="Blue", width=1))
     i = i + 1
