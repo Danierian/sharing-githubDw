@@ -18,7 +18,7 @@ server = app.server
 #
 # ------------------------------------------------------------------------------------------
 PovertyRates = pd.read_csv('PovertyRates.csv', encoding='Latin-1')
-PovertyRates = PovertyRates.set_index('State_name')
+#PovertyRates = PovertyRates.set_index('State_name')
 unemp = pd.read_csv('unemploymentRates.csv', encoding='Latin-1')
 unemp = unemp.set_index('State_name')
 medinc = pd.read_csv('medhhinc.csv', encoding='Latin-1')
@@ -36,14 +36,14 @@ demographics = ['People Living in Poverty', 'Hispanics', 'African Americans', 'A
 #
 # ------------------------------------------------------------------------------------------
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=PovertyRates['All Tracts'], y=PovertyRates.index, mode='markers', name='All Tracts'))
-fig.add_trace(go.Scatter(x=PovertyRates['Designated OZ'], y=PovertyRates.index, mode='markers', name='Designated OZ'))
-fig.add_trace(go.Scatter(x=PovertyRates['OZ eligible'], y=PovertyRates.index, mode='markers', name='OZ eligible'))
+fig.add_trace(go.Scatter(x=PovertyRates['All Tracts'], y=PovertyRates.State_name, mode='markers', name='All Tracts'))
+fig.add_trace(go.Scatter(x=PovertyRates['Designated OZ'], y=PovertyRates.State_name, mode='markers', name='Designated OZ'))
+fig.add_trace(go.Scatter(x=PovertyRates['OZ eligible'], y=PovertyRates.State_name, mode='markers', name='OZ eligible'))
 
 i = 0
 for row in PovertyRates.values:
     fig.add_shape(type="line",
-                  x0=row[0], x1=row[2], y0=i, y1=i,
+                  x0=row[1], x1=row[3], y0=i, y1=i,
                   line=dict(color="Blue", width=1))
     i = i + 1
     continue
@@ -354,9 +354,9 @@ fig6.update_layout(
     width=1000,
     height=500,
     xaxis_tickfont_size=12,
-    yaxis=dict(title='SD of Poverty Rates', range=[0, .25])
+    yaxis=dict(title='SD of Poverty Rates',range=[0, .25],tickformat=",.2%"),
 
-    ,
+
     legend=dict(
         x=1,
         y=1.0,
@@ -429,6 +429,12 @@ average poverty rate of designated OZs, eligible OZs (not designated), and non-e
 The figure below shows that for every state, there is a higher average poverty rate for the designated OZs compared to
 eligible OZs (not designated), and non-eligible census tracts.
 
+Even though there is a variation of poverty rates on the state level, it is still apparent that the average poverty rate
+on the state level is lower that the average poverty rate for designated OZ tracts. A t-test was used to test the 
+significance of this difference in means and there is enough statistical evidence to reject the null hypothesis at the 5% level. 
+Conducting the t-test returned a t-statistic of 25.656 and a p-value of 0.000 meaning that the average poverty rate for the state
+and the average poverty rate for designated OZ tracts are significantly different.
+
 *_Note: The poverty rate estimates are from 2016 as these are the estimations that were used for designation._
 
 
@@ -437,6 +443,37 @@ eligible OZs (not designated), and non-eligible census tracts.
         id='Poverty_Rates',
         figure=fig
     ),
+   #####the table for poverty rates commented out below
+#dash_table.DataTable(
+ #   id='Povtable',
+  #     {
+   #         'id': 'State_name',
+    #        'name': 'State',
+     #       'type': 'text'
+
+      #'id': 'All Tracts',
+       # 'name': 'All Tracts',
+        #'type': 'numeric',
+        #'format': FormatTemplate.percentage(2)
+   # }, {
+    #    'id': 'OZ eligible',
+     ##  'type': 'numeric',
+       # 'format': FormatTemplate.percentage(2)
+
+   # }, {
+    ##    'id': 'Designated OZ',
+      #  'name': 'OZ Designated ',
+       ##'format': FormatTemplate.percentage(2)
+
+  #  }
+
+  #  ],
+  #  data=PovertyRates.to_dict('records'),
+  #  style_cell=dict(textAlign='center'),
+  #  style_header=dict(backgroundColor="royalblue",textColor='White'),
+  #  style_data=dict(backgroundColor="lavender")
+#),
+
     html.Br(),
     dcc.Graph(
         id='povrate_SD',
@@ -449,7 +486,7 @@ eligible OZs (not designated), and non-eligible census tracts.
         figure=fig5
     ),
     dash_table.DataTable(
-        id='table',
+        id='OZContiguousTable',
         columns=[{
             'id': 'State_name',
             'name': 'State',
@@ -483,6 +520,10 @@ eligible OZs (not designated), and non-eligible census tracts.
 
 Below are some additional economic metrics related to unemployment. Each graph compares the unemployment rate
 and labor force participation rate of designated OZs, eligible but not Designated and non eligible census tracts.
+The average difference between the unemployment rate for all tracts within the a State and only OZ designated tracts is
+3.59%. However,  there are several states with an exceptionally higher difference between State poverty rate and OZ 
+designated average poverty rate. These states include : Connecticut : 6.22% , District of Columbia : 8.75%, Florida : 8.05%,
+ and Illinois : 11.03%.
 
 '''),
     dcc.Graph(
