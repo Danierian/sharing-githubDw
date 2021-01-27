@@ -58,7 +58,8 @@ app.layout = html.Div([
     html.Div(id='output_container', children=[]),
     html.Br(),
     dcc.Markdown('''
-  *The data used comes from the Perservation Database 
+  *The data used comes from the Perservation Database. You can hover in the graph
+  to see specific data points. 
 
 
 '''),
@@ -77,7 +78,28 @@ app.layout = html.Div([
 html.Br(),
     dcc.Markdown('''
     The graph above shows the total number of units assisted by the Section 8 subsidy in a given year.
+    Below is a chart to match these numbers if you needed to see them a little better
 '''),
+
+html.Br(),
+    dash_table.DataTable(
+        id='OZContiguousTable',
+        columns=[{
+            'id': 'Year_End',
+            'name': 'Year',
+            'type': 'text'
+        }, {
+            'id': 'Section_8',
+            'name': 'Section 8',
+            'type': 'numeric'
+
+        },
+    ],
+        data=UnitsAssistedperYear.to_dict('records'),
+        style_cell=dict(textAlign='center'),
+        style_header=dict(backgroundColor="royalblue", textColor='White'),
+        style_data=dict(backgroundColor="lavender")
+    )
 
 ])
 
