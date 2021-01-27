@@ -1,0 +1,107 @@
+import numpy
+import pandas as pd
+import plotly.express as px
+
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
+
+# ------------------------------------------------------------------------------------------
+#
+# Importing Data
+#
+# ------------------------------------------------------------------------------------------
+
+one=pd.read_excel('All Properties.xlsx')
+S_8=one.iloc[:,47:64]
+Section_8=info.join(S_8)
+GroupByYear=Section_8.groupby(pd.Grouper(key='S8_1_StartDate',freq='A')).sum()
+GroupByYear['S8_Total_AssistingUnits']=GroupByYear['S8_1_AssistedUnits']+GroupByYear['S8_2_AssistedUnits']
+GroupByYear.drop(GroupByYear.tail(1).index,inplace=True)
+
+
+
+fig = px.line(GroupByYear, x=GroupByYear.index, y='S8_Total_AssistingUnits')
+fig.update_layout(
+xaxis_title='Year',
+yaxis_title="# of Newly Assisted Units",
+title='Section 8 Newly Assisted Units by Year')
+fig.show()
+
+#There are currently 21,769 properties that are listed as active Section 8 with 1,346,652 units are being assisted by Section 8. Of these properties, there are 1015 properties that have a second Section 8 subsidy that covers an additional 57,549 units.This a total of 1,404,201 units being actively assisted by Section 8. 
+
+import plotly.graph_objects as go
+
+S_8['S8_1_AssistedUnits']=S_8['S8_1_AssistedUnits'].fillna(0)
+S_8['S8_2_AssistedUnits']=S_8['S8_2_AssistedUnits'].fillna(0)
+
+counter=0
+Section8count=numpy.array([])
+
+for i in year:
+    counter=0
+    for  row in S_8.values:
+        if row[3]<=i<=row[4]:
+            counter=counter+row[5]
+        if row[12]<=i<=row[13]:
+            counter=counter+row[14]
+            
+    Section8count=numpy.append(Section8count,counter)
+    
+year=GroupByYear.index
+UnitsAssistedperYear=pd.DataFrame(year)
+UnitsAssistedperYear['Section_8']=Section8count
+
+Years=Section_8.groupby(pd.Grouper(key='S8_1_StartDate',freq='A')).sum()
+Years.drop(Years.tail(1).index,inplace=True)
+Years.drop(Years.head(12).index,inplace=True)
+
+
+
+
+GroupByYear.drop(GroupByYear.head(11).index,inplace=True)
+
+fig2=go.Figure()
+#fig.add_trace(go.Scatter(x=UnitsAssistedperYear.Year_End,y=UnitsAssistedperYear['FHA'],name='FHA'))
+#fig.add_trace(go.Scatter(x=UnitsAssistedperYear.Year_End,y=UnitsAssistedperYear['LIHTC'],name='LIHTC'))
+fig2.add_trace(go.Scatter(x=UnitsAssistedperYear.S8_1_StartDate,y=UnitsAssistedperYear['Section_8'],name='Section 8'))
+#fig.add_trace(go.Scatter(x=HousingStock.index, y = HousingStock['HousingStock'],name = 'Housing Stock'))
+
+
+fig2.update_layout(
+xaxis_title='Year',
+    yaxis_title=' Assisted Units per Year',
+    title='Assisted Number of Units by Subsidy per Year',
+yaxis=dict( tickformat= ",")
+
+)
+
+app.layout = html.Div([
+    html.H1("Characteristics of Opportunity Zones", style={'text-align': 'center'}),
+
+    html.Div(id='output_container', children=[]),
+    html.Br(),
+    dcc.Markdown('''
+  *The data used comes from the Perservation Database 
+#### Newly Assisted Per Year
+
+'''),
+    dcc.Graph(
+        id='NewlyAssisted',
+        figure=fig
+    ),
+    html.Br(),
+    dcc.Markdown('''
+'''),
+    dcc.Graph(
+        id='SubsidyPerYear',
+        figure=fig2
+    )
+ 
+   
+
+])
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
